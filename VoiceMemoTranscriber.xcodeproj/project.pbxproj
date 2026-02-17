@@ -17,6 +17,7 @@
 		A10000000000000000000008 /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000008 /* AppLogger.swift */; };
 		A10000000000000000000009 /* DateFormatter+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000009 /* DateFormatter+Ext.swift */; };
 		A1000000000000000000000A /* notes_create.applescript in Resources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000C /* notes_create.applescript */; };
+		A1000000000000000000000B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000E /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,6 +34,7 @@
 		B1000000000000000000000B /* VoiceMemoTranscriber.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = VoiceMemoTranscriber.entitlements; sourceTree = "<group>"; };
 		B1000000000000000000000C /* notes_create.applescript */ = {isa = PBXFileReference; lastKnownFileType = text.script.applescript; path = notes_create.applescript; sourceTree = "<group>"; };
 		B1000000000000000000000D /* VoiceMemoTranscriber.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; path = VoiceMemoTranscriber.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B1000000000000000000000E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +68,7 @@
 				B10000000000000000000007 /* ProcessedStore.swift */,
 				B10000000000000000000008 /* AppLogger.swift */,
 				B10000000000000000000009 /* DateFormatter+Ext.swift */,
+				B1000000000000000000000E /* Assets.xcassets */,
 				D10000000000000000000003 /* Support */,
 			);
 			path = VoiceMemoTranscriber;
@@ -148,6 +151,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1000000000000000000000A /* notes_create.applescript in Resources */,
+				A1000000000000000000000B /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -217,6 +221,7 @@
 		F20000000000000000000003 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = VoiceMemoTranscriber/Support/VoiceMemoTranscriber.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -242,6 +247,7 @@
 		F20000000000000000000004 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = VoiceMemoTranscriber/Support/VoiceMemoTranscriber.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;

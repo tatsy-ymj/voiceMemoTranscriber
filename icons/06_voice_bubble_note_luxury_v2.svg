@@ -1,0 +1,100 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='1024' height='1024' viewBox='0 0 1024 1024'>
+  <defs>
+    <linearGradient id='bg' x1='0' y1='0' x2='1' y2='1'>
+      <stop offset='0%' stop-color='#05070C'/>
+      <stop offset='60%' stop-color='#0C111B'/>
+      <stop offset='100%' stop-color='#141B26'/>
+    </linearGradient>
+
+    <radialGradient id='vignette' cx='50%' cy='40%' r='70%'>
+      <stop offset='0%' stop-color='#FFFFFF' stop-opacity='0.06'/>
+      <stop offset='100%' stop-color='#000000' stop-opacity='0.38'/>
+    </radialGradient>
+
+    <linearGradient id='bubbleFront' x1='0' y1='0' x2='1' y2='1'>
+      <stop offset='0%' stop-color='#FAF7F1'/>
+      <stop offset='40%' stop-color='#ECE5DA'/>
+      <stop offset='100%' stop-color='#CEC3AF'/>
+    </linearGradient>
+
+    <linearGradient id='bubbleBevel' x1='0' y1='0' x2='0' y2='1'>
+      <stop offset='0%' stop-color='#FFFFFF' stop-opacity='0.9'/>
+      <stop offset='100%' stop-color='#8A7D67' stop-opacity='0.75'/>
+    </linearGradient>
+
+    <linearGradient id='wave' x1='0' y1='0' x2='1' y2='0'>
+      <stop offset='0%' stop-color='#B08D57'/>
+      <stop offset='50%' stop-color='#D4AF6A'/>
+      <stop offset='100%' stop-color='#8C6A3B'/>
+    </linearGradient>
+
+    <linearGradient id='noteFront' x1='0' y1='0' x2='1' y2='1'>
+      <stop offset='0%' stop-color='#D6CDBE'/>
+      <stop offset='100%' stop-color='#B2A690'/>
+    </linearGradient>
+
+    <linearGradient id='noteEdge' x1='0' y1='0' x2='0' y2='1'>
+      <stop offset='0%' stop-color='#EEE8DC'/>
+      <stop offset='100%' stop-color='#8F826C'/>
+    </linearGradient>
+
+    <filter id='bubbleShadow' x='-25%' y='-25%' width='160%' height='170%'>
+      <feDropShadow dx='0' dy='34' stdDeviation='28' flood-color='#000000' flood-opacity='0.5'/>
+      <feDropShadow dx='0' dy='8' stdDeviation='10' flood-color='#111827' flood-opacity='0.25'/>
+    </filter>
+
+    <filter id='noteShadow' x='-30%' y='-30%' width='170%' height='180%'>
+      <feDropShadow dx='0' dy='22' stdDeviation='18' flood-color='#000000' flood-opacity='0.5'/>
+      <feDropShadow dx='0' dy='6' stdDeviation='7' flood-color='#0F172A' flood-opacity='0.32'/>
+    </filter>
+
+    <filter id='innerShine' x='-20%' y='-20%' width='140%' height='140%'>
+      <feGaussianBlur stdDeviation='10'/>
+    </filter>
+
+    <filter id='goldGlow' x='-30%' y='-40%' width='160%' height='180%'>
+      <feDropShadow dx='0' dy='0' stdDeviation='5' flood-color='#D4AF6A' flood-opacity='0.45'/>
+    </filter>
+  </defs>
+
+  <rect width='1024' height='1024' rx='220' fill='url(#bg)'/>
+  <rect width='1024' height='1024' rx='220' fill='url(#vignette)'/>
+
+  <!-- Bubble base + depth -->
+  <path d='M212 208 H812 C857 208 892 243 892 288 V578 C892 623 857 658 812 658 H518 L360 796 V658 H212 C167 658 132 623 132 578 V288 C132 243 167 208 212 208 Z'
+        fill='url(#bubbleFront)' filter='url(#bubbleShadow)'/>
+
+  <!-- Strong top bevel -->
+  <path d='M212 208 H812 C857 208 892 243 892 288 V334 C892 289 857 254 812 254 H212 C167 254 132 289 132 334 V288 C132 243 167 208 212 208 Z'
+        fill='url(#bubbleBevel)' opacity='0.95'/>
+
+  <!-- Bottom inner shadow for depth -->
+  <path d='M170 590 C250 640 760 640 854 590' fill='none' stroke='#857963' stroke-width='20' opacity='0.45'/>
+
+  <!-- Tail highlight -->
+  <path d='M360 658 L518 658 L389 770 L360 796 Z' fill='#EEE8DC' opacity='0.7'/>
+
+  <!-- Wave -->
+  <path d='M252 468 C302 390 348 520 398 468 C448 416 494 562 548 448 C600 336 646 536 704 442 C738 388 770 470 792 454'
+        fill='none' stroke='url(#wave)' stroke-width='30' stroke-linecap='round' stroke-linejoin='round' filter='url(#goldGlow)'/>
+
+  <!-- Note card with stronger depth -->
+  <path d='M742 626 H868 C888 626 904 642 904 662 V840 C904 860 888 876 868 876 H742 C722 876 706 860 706 840 V662 C706 642 722 626 742 626 Z'
+        fill='url(#noteFront)' filter='url(#noteShadow)'/>
+
+  <!-- Note top bevel -->
+  <path d='M742 626 H868 C888 626 904 642 904 662 V700 C904 680 888 664 868 664 H742 C722 664 706 680 706 700 V662 C706 642 722 626 742 626 Z'
+        fill='url(#noteEdge)' opacity='0.95'/>
+
+  <!-- Folded corner -->
+  <path d='M826 626 L904 704 L826 704 Z' fill='#978A74'/>
+  <path d='M826 626 L904 704 L854 704 Z' fill='#B3A58E' opacity='0.65'/>
+
+  <!-- Note inner lines -->
+  <line x1='744' y1='738' x2='858' y2='738' stroke='#6F6558' stroke-width='14' stroke-linecap='round'/>
+  <line x1='744' y1='782' x2='858' y2='782' stroke='#6F6558' stroke-width='14' stroke-linecap='round'/>
+
+  <!-- Ambient luxury accents -->
+  <path d='M150 810 C240 760 286 844 374 798' stroke='#D4AF6A' stroke-width='8' opacity='0.22' fill='none' stroke-linecap='round'/>
+  <path d='M664 154 C742 118 804 198 884 160' stroke='#D4AF6A' stroke-width='8' opacity='0.2' fill='none' stroke-linecap='round'/>
+</svg>

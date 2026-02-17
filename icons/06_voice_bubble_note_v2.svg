@@ -1,0 +1,59 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='1024' height='1024' viewBox='0 0 1024 1024'>
+  <defs>
+    <linearGradient id='bg' x1='0' y1='0' x2='1' y2='1'>
+      <stop offset='0%' stop-color='#020617'/>
+      <stop offset='55%' stop-color='#0F172A'/>
+      <stop offset='100%' stop-color='#111827'/>
+    </linearGradient>
+
+    <radialGradient id='glow' cx='50%' cy='40%' r='65%'>
+      <stop offset='0%' stop-color='#22D3EE' stop-opacity='0.45'/>
+      <stop offset='60%' stop-color='#0EA5E9' stop-opacity='0.16'/>
+      <stop offset='100%' stop-color='#0EA5E9' stop-opacity='0'/>
+    </radialGradient>
+
+    <linearGradient id='bubbleFill' x1='0' y1='0' x2='1' y2='1'>
+      <stop offset='0%' stop-color='#F8FAFC'/>
+      <stop offset='100%' stop-color='#E2E8F0'/>
+    </linearGradient>
+
+    <linearGradient id='wave' x1='0' y1='0' x2='1' y2='0'>
+      <stop offset='0%' stop-color='#14B8A6'/>
+      <stop offset='50%' stop-color='#06B6D4'/>
+      <stop offset='100%' stop-color='#0EA5E9'/>
+    </linearGradient>
+
+    <filter id='softShadow' x='-20%' y='-20%' width='140%' height='160%'>
+      <feDropShadow dx='0' dy='20' stdDeviation='20' flood-color='#020617' flood-opacity='0.45'/>
+    </filter>
+
+    <filter id='waveGlow' x='-40%' y='-40%' width='180%' height='180%'>
+      <feDropShadow dx='0' dy='0' stdDeviation='8' flood-color='#22D3EE' flood-opacity='0.6'/>
+    </filter>
+  </defs>
+
+  <rect width='1024' height='1024' rx='220' fill='url(#bg)'/>
+  <rect width='1024' height='1024' rx='220' fill='url(#glow)'/>
+
+  <path d='M204 210 H820 C861 210 894 243 894 284 V576 C894 617 861 650 820 650 H520 L366 790 V650 H204 C163 650 130 617 130 576 V284 C130 243 163 210 204 210 Z'
+        fill='url(#bubbleFill)' filter='url(#softShadow)'/>
+
+  <path d='M204 210 H820 C861 210 894 243 894 284 V328 C894 287 861 254 820 254 H204 C163 254 130 287 130 328 V284 C130 243 163 210 204 210 Z'
+        fill='#FFFFFF' opacity='0.52'/>
+
+  <path d='M245 460 C288 384 334 522 380 460 C427 398 468 566 520 450 C568 350 620 530 676 440 C716 375 758 470 790 446'
+        fill='none' stroke='url(#wave)' stroke-width='30' stroke-linecap='round' stroke-linejoin='round' filter='url(#waveGlow)'/>
+
+  <circle cx='250' cy='460' r='11' fill='#14B8A6'/>
+  <circle cx='790' cy='446' r='11' fill='#0EA5E9'/>
+
+  <path d='M744 622 H870 C886 622 900 636 900 652 V838 C900 854 886 868 870 868 H744 C728 868 714 854 714 838 V652 C714 636 728 622 744 622 Z'
+        fill='#CBD5E1' opacity='0.94' filter='url(#softShadow)'/>
+  <path d='M826 622 L900 696 L826 696 Z' fill='#94A3B8' opacity='0.9'/>
+
+  <line x1='748' y1='728' x2='852' y2='728' stroke='#64748B' stroke-width='14' stroke-linecap='round'/>
+  <line x1='748' y1='770' x2='852' y2='770' stroke='#64748B' stroke-width='14' stroke-linecap='round'/>
+
+  <path d='M90 774 C180 724 232 828 322 778' stroke='#22D3EE' stroke-width='12' opacity='0.22' fill='none' stroke-linecap='round'/>
+  <path d='M682 152 C758 114 812 196 892 154' stroke='#38BDF8' stroke-width='10' opacity='0.2' fill='none' stroke-linecap='round'/>
+</svg>
