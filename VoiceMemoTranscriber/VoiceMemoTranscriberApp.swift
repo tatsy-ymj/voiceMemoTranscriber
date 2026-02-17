@@ -4,6 +4,15 @@ import SwiftUI
 struct VoiceMemoTranscriberApp: App {
     @StateObject private var appController = AppController()
 
+    init() {
+        if isAnotherInstanceRunning() {
+            AppLogger.shared.log("Another instance detected. Terminating this launch.")
+            DispatchQueue.main.async {
+                NSApplication.shared.terminate(nil)
+            }
+        }
+    }
+
     var body: some Scene {
         MenuBarExtra {
             VStack(alignment: .leading, spacing: 8) {
@@ -53,5 +62,14 @@ struct VoiceMemoTranscriberApp: App {
             Image(systemName: appController.watching ? "waveform.circle.fill" : "waveform.circle")
         }
         .menuBarExtraStyle(.window)
+    }
+
+    private func isAnotherInstanceRunning() -> Bool {
+        guard let bundleID = Bundle.main.bundleIdentifier else {
+            return false
+        }
+        let currentPID = ProcessInfo.processInfo.processIdentifier
+        let apps = NSRunningApplication.runningApplications(withBundleIdentifier: bundleID)
+        return apps.contains { $0.processIdentifier != currentPID }
     }
 }
