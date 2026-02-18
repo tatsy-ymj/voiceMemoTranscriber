@@ -1,10 +1,16 @@
 import Foundation
 
 enum NotesServiceError: Error, LocalizedError {
+    case automationDenied(String)
+    case defaultAccountUnavailable(String)
     case scriptError(String)
 
     var errorDescription: String? {
         switch self {
+        case .automationDenied(let msg):
+            return "Notes automation permission denied: \(msg). Open System Settings > Privacy & Security > Automation and allow this app to control Notes."
+        case .defaultAccountUnavailable(let msg):
+            return "Notes default account is unavailable: \(msg). Open Notes once and ensure an account exists."
         case .scriptError(let msg):
             return "Notes automation failed: \(msg)"
         }
@@ -60,8 +66,21 @@ final class NotesService {
         guard process.terminationStatus == 0 else {
             let data = err.fileHandleForReading.readDataToEndOfFile()
             let message = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "unknown error"
-            throw NotesServiceError.scriptError(message)
+            throw classifyScriptError(message)
         }
+    }
+
+    private func classifyScriptError(_ message: String) -> NotesServiceError {
+        let lower = message.lowercased()
+        if lower.contains("(-1743)") || lower.contains("not authorized to send apple events") {
+            return .automationDenied(message)
+        }
+        if lower.contains("can't get default account")
+            || lower.contains("can’t get default account")
+            || lower.contains("default account") {
+            return .defaultAccountUnavailable(message)
+        }
+        return .scriptError(message)
     }
 
     private func normalizeLineEndingsForNotes(_ text: String) -> String {

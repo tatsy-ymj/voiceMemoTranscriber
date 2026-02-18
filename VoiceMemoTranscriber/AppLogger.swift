@@ -8,8 +8,8 @@ final class AppLogger {
     private let dateFormatter: ISO8601DateFormatter
 
     private init() {
-        let logsDir = FileManager.default.homeDirectoryForCurrentUser
-            .appendingPathComponent("Library/Logs/VoiceMemoTranscriber", isDirectory: true)
+        let logsDir = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first!
+            .appendingPathComponent("Logs/VoiceMemoTranscriber", isDirectory: true)
         try? FileManager.default.createDirectory(at: logsDir, withIntermediateDirectories: true)
         logFileURL = logsDir.appendingPathComponent("app.log")
 

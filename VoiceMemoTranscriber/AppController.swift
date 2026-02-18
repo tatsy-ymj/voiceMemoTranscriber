@@ -19,6 +19,7 @@ final class AppController: ObservableObject {
     private var queuedSet: Set<String> = []
     private var knownPaths: Set<String> = []
     private var isProcessing = false
+    private var activeSecurityScopedURL: URL?
 
     @Published private(set) var watchFolderURL: URL?
 
@@ -29,6 +30,10 @@ final class AppController: ObservableObject {
     init() {
         restoreWatchFolderBookmark()
         logger.log("App launched")
+    }
+
+    deinit {
+        stopSecurityScopedAccess()
     }
 
     func selectWatchFolder() {
@@ -50,6 +55,7 @@ final class AppController: ObservableObject {
                 defer { self.openPanel = nil }
 
                 if response == .OK, let url = panel.url {
+                    self.stopSecurityScopedAccess()
                     self.watchFolderURL = url
                     self.persistWatchFolderBookmark(url)
                     self.logger.log("Selected watch folder: \(url.path)")
@@ -93,16 +99,27 @@ final class AppController: ObservableObject {
             return
         }
 
+        guard startSecurityScopedAccess(for: watchFolderURL) else {
+            let msg = "Cannot access folder: \(watchFolderURL.path). If App Sandbox is ON, re-select this folder and allow access. For Voice Memos folders, Full Disk Access may also be required."
+            logger.error(msg)
+            showTransientAlert(msg)
+            return
+        }
+
         guard FileManager.default.isReadableFile(atPath: watchFolderURL.path) else {
-            showTransientAlert("Cannot read folder: \(watchFolderURL.path). Grant Full Disk Access to this app/Terminal.")
+            let msg = "Cannot read folder: \(watchFolderURL.path). Grant Full Disk Access to this app and retry."
+            logger.error(msg)
+            showTransientAlert(msg)
             return
         }
 
         Task {
             let granted = await speechTranscriber.requestAuthorization()
             guard granted else {
+                logger.error("Speech recognition permission denied. Open System Settings > Privacy & Security > Speech Recognition.")
+                stopSecurityScopedAccess()
                 await MainActor.run {
-                    self.showTransientAlert("Speech recognition permission denied.")
+                    self.showTransientAlert("Speech recognition permission denied. Open System Settings > Privacy & Security > Speech Recognition and allow VoiceMemoTranscriber.")
                 }
                 return
             }
@@ -127,6 +144,7 @@ final class AppController: ObservableObject {
                 logger.log("Started watching: \(watchFolderURL.path)")
             } catch {
                 logger.error("Failed to start watcher: \(error.localizedDescription)")
+                stopSecurityScopedAccess()
                 await MainActor.run {
                     self.showTransientAlert("Failed to start watcher: \(error.localizedDescription)")
                 }
@@ -146,6 +164,7 @@ final class AppController: ObservableObject {
         DispatchQueue.main.async {
             self.watching = false
         }
+        stopSecurityScopedAccess()
         logger.log("Stopped watching")
     }
 
@@ -221,6 +240,16 @@ final class AppController: ObservableObject {
             logger.log("Note created for: \(stable.url.lastPathComponent)")
         } catch {
             logger.error("Failed to process \(path): \(error.localizedDescription)")
+            if let notesError = error as? NotesServiceError {
+                switch notesError {
+                case .automationDenied:
+                    logger.error("Grant Automation permission: System Settings > Privacy & Security > Automation > VoiceMemoTranscriber > Notes")
+                case .defaultAccountUnavailable:
+                    logger.error("Open Notes once and ensure a default account is configured.")
+                case .scriptError:
+                    break
+                }
+            }
             if let info = try? currentFileInfo(url: fileURL) {
                 let fp = ProcessedStore.fingerprint(path: info.url.path, size: info.size, mtime: info.mtime)
                 processedStore.markProcessed(fingerprint: fp, status: .failed)
@@ -313,6 +342,7 @@ final class AppController: ObservableObject {
         do {
             let data = try url.bookmarkData(options: [.withSecurityScope], includingResourceValuesForKeys: nil, relativeTo: nil)
             UserDefaults.standard.set(data, forKey: AppConstants.watchFolderBookmarkKey)
+            logger.log("Saved security-scoped bookmark for folder.")
         } catch {
             logger.error("Failed to save folder bookmark: \(error.localizedDescription)")
             UserDefaults.standard.set(url.path, forKey: AppConstants.watchFolderPathFallbackKey)
@@ -324,6 +354,10 @@ final class AppController: ObservableObject {
             var isStale = false
             if let url = try? URL(resolvingBookmarkData: data, options: [.withSecurityScope], relativeTo: nil, bookmarkDataIsStale: &isStale) {
                 watchFolderURL = url
+                if isStale {
+                    logger.log("Watch folder bookmark is stale. Re-saving refreshed bookmark.")
+                    persistWatchFolderBookmark(url)
+                }
                 return
             }
         }
@@ -331,5 +365,30 @@ final class AppController: ObservableObject {
         if let path = UserDefaults.standard.string(forKey: AppConstants.watchFolderPathFallbackKey) {
             watchFolderURL = URL(fileURLWithPath: path)
         }
+    }
+
+    @discardableResult
+    private func startSecurityScopedAccess(for url: URL) -> Bool {
+        if let active = activeSecurityScopedURL, active.path == url.path {
+            return true
+        }
+        stopSecurityScopedAccess()
+        if url.startAccessingSecurityScopedResource() {
+            activeSecurityScopedURL = url
+            logger.log("Started security-scoped access: \(url.path)")
+            return true
+        }
+        if FileManager.default.isReadableFile(atPath: url.path) {
+            logger.log("Security-scoped access not required or unavailable for: \(url.path)")
+            return true
+        }
+        return false
+    }
+
+    private func stopSecurityScopedAccess() {
+        guard let url = activeSecurityScopedURL else { return }
+        url.stopAccessingSecurityScopedResource()
+        logger.log("Stopped security-scoped access: \(url.path)")
+        activeSecurityScopedURL = nil
     }
 }

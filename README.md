@@ -11,7 +11,7 @@ Voice Memos由来の音声ファイル（m4a/wav/aiff/caf）を監視フォル�
    - `VoiceMemoTranscriber/Support/Info.plist`
 5. ターゲットの `Signing & Capabilities` で Entitlements ファイルを
    - `VoiceMemoTranscriber/Support/VoiceMemoTranscriber.entitlements`
-   に設定（Sandboxはfalse）
+   に設定（SandboxはON）
 
 ## 2. UI / 機能
 
@@ -38,7 +38,7 @@ Voice Memos由来の音声ファイル（m4a/wav/aiff/caf）を監視フォル�
 - ノート本文は「文字起こし本文」+ 改行 + 「元ファイルのfile://リンク」
 - 重複防止: `path + size + mtime` のSHA256指紋をJSON保存
 - キュー: 逐次1件ずつ処理（同時実行なし）
-- ログ: Console + `~/Library/Logs/VoiceMemoTranscriber/app.log`
+- ログ: Console + `~/Library/Logs/VoiceMemoTranscriber/app.log`（Sandbox実行時はコンテナ配下のLibrary/Logs）
 
 ## 4. 権限
 
@@ -75,16 +75,9 @@ Voice Memos由来の音声ファイル（m4a/wav/aiff/caf）を監視フォル�
 - System Settings > Privacy & Security > Automation でアプリのNotes制御を許可
 
 ### 監視フォルダが読めない
-- Full Disk Access をアプリ（または実行元Terminal）へ付与
+- 監視フォルダをアプリ内の `Select Watch Folder…` から再選択（security-scoped bookmark更新）
+- Voice MemosのGroup Containers配下を読む場合は必要に応じて Full Disk Access をアプリへ付与
 
 ### 同じファイルが再処理されない
 - 重複防止仕様です（fingerprintベース）
 - `~/Library/Application Support/VoiceMemoTranscriber/processed.json` を削除すると再処理可能
-
-## 7. Sandbox ON で運用したい場合（注意）
-
-まずはSandbox OFFを推奨。
-Sandbox ON にする場合は最低限以下を検討:
-- User-selected file read/write 権限
-- Security-scoped bookmark の適切な `startAccessingSecurityScopedResource()` 運用
-- Apple Events（Notes）関連の制約対応
