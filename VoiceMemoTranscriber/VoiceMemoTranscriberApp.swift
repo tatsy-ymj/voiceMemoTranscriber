@@ -41,6 +41,18 @@ struct VoiceMemoTranscriberApp: App {
                     appController.requestSpeechPermissionManual()
                 }
 
+                Divider()
+
+                Button("Edit Note Format...") {
+                    appController.editNoteTemplate()
+                }
+
+                Button("Reset Note Format to Default") {
+                    appController.resetNoteTemplateToDefault()
+                }
+
+                Divider()
+
                 Button("Open Log") {
                     appController.openLogFile()
                 }

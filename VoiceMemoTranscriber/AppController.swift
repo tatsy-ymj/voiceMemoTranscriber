@@ -95,6 +95,69 @@ final class AppController: ObservableObject {
         NSWorkspace.shared.open(AppLogger.shared.logFileURL)
     }
 
+    func editNoteTemplate() {
+        DispatchQueue.main.async {
+            let alert = NSAlert()
+            alert.messageText = "Edit Note Format"
+            alert.informativeText = "Available placeholders: {date} {time} {transcribed_text} {original_audio} {filename}"
+            alert.alertStyle = .informational
+            alert.addButton(withTitle: "Save")
+            alert.addButton(withTitle: "Reset Default")
+            alert.addButton(withTitle: "Cancel")
+
+            let scroll = NSTextView.scrollableTextView()
+            scroll.frame = NSRect(x: 0, y: 0, width: 460, height: 170)
+            guard let textView = scroll.documentView as? NSTextView else {
+                self.showTransientAlert("Failed to open note format editor.")
+                return
+            }
+            textView.isRichText = false
+            textView.isAutomaticQuoteSubstitutionEnabled = false
+            textView.isEditable = true
+            textView.isSelectable = true
+            textView.font = .monospacedSystemFont(ofSize: 12, weight: .regular)
+            textView.string = self.currentNoteTemplate()
+            textView.setSelectedRange(NSRange(location: textView.string.count, length: 0))
+            alert.accessoryView = scroll
+
+            NSApp.activate(ignoringOtherApps: true)
+            let alertWindow = alert.window
+            alertWindow.initialFirstResponder = textView
+            alertWindow.makeFirstResponder(textView)
+            let response = alert.runModal()
+            if response == .alertFirstButtonReturn {
+                let edited = textView.string.trimmingCharacters(in: .newlines)
+                guard !edited.isEmpty else {
+                    self.showTransientAlert("Note format cannot be empty.")
+                    return
+                }
+                UserDefaults.standard.set(edited, forKey: AppConstants.noteTemplateKey)
+                self.logger.log("Updated note format template.")
+            } else if response == .alertSecondButtonReturn {
+                UserDefaults.standard.set(AppConstants.defaultNoteTemplate, forKey: AppConstants.noteTemplateKey)
+                self.logger.log("Reset note format template to default.")
+                self.showTransientAlert("Note format reset to default.")
+            }
+        }
+    }
+
+    func resetNoteTemplateToDefault() {
+        DispatchQueue.main.async {
+            let alert = NSAlert()
+            alert.messageText = "Reset note format to default?"
+            alert.informativeText = "Your custom note format will be replaced."
+            alert.alertStyle = .warning
+            alert.addButton(withTitle: "Reset")
+            alert.addButton(withTitle: "Cancel")
+            NSApp.activate(ignoringOtherApps: true)
+            let response = alert.runModal()
+            guard response == .alertFirstButtonReturn else { return }
+            UserDefaults.standard.set(AppConstants.defaultNoteTemplate, forKey: AppConstants.noteTemplateKey)
+            self.logger.log("Reset note format template to default.")
+            self.showTransientAlert("Note format reset to default.")
+        }
+    }
+
     func clearRecentResults() {
         DispatchQueue.main.async {
             let alert = NSAlert()
@@ -253,11 +316,10 @@ final class AppController: ObservableObject {
             let transcript = try await speechTranscriber.transcribeFile(url: stable.url)
 
             let importedAt = Date()
-            let noteTitle = DateFormatter.noteTitleFormatter.string(from: importedAt)
-            let noteBody = makeNoteBody(fileURL: stable.url, transcript: transcript)
+            let noteContent = makeNoteContent(fileURL: stable.url, transcript: transcript, at: importedAt)
 
             try await MainActor.run {
-                try notesService.createNote(title: noteTitle, body: noteBody)
+                try notesService.createNote(title: noteContent.title, body: noteContent.body)
             }
             processedStore.markProcessed(
                 fingerprint: fingerprint,
@@ -376,12 +438,50 @@ final class AppController: ObservableObject {
         return nil
     }
 
-    private func makeNoteBody(fileURL: URL, transcript: String) -> String {
-        let sourceLink = fileURL.absoluteString
-        return """
-        \(transcript)
-        \(sourceLink)
-        """
+    private struct NoteContent {
+        let title: String
+        let body: String
+    }
+
+    private func makeNoteContent(fileURL: URL, transcript: String, at date: Date) -> NoteContent {
+        var template = currentNoteTemplate()
+        if !template.contains("{transcribed_text}") {
+            template += "\n{transcribed_text}"
+        }
+
+        let replacements: [String: String] = [
+            "{date}": DateFormatter.noteTemplateDateFormatter.string(from: date),
+            "{time}": DateFormatter.noteTemplateTimeFormatter.string(from: date),
+            "{transcribed_text}": transcript,
+            "{original_audio}": fileURL.absoluteString,
+            "{filename}": fileURL.lastPathComponent,
+        ]
+
+        var output = template
+        for (token, value) in replacements {
+            output = output.replacingOccurrences(of: token, with: value)
+        }
+
+        let normalized = output
+            .replacingOccurrences(of: "\r\n", with: "\n")
+            .replacingOccurrences(of: "\r", with: "\n")
+
+        let parts = normalized.split(separator: "\n", maxSplits: 1, omittingEmptySubsequences: false)
+        let fallbackTitle = fileURL.deletingPathExtension().lastPathComponent
+        let title = parts.first.map(String.init)?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false
+            ? String(parts.first!).trimmingCharacters(in: .whitespacesAndNewlines)
+            : fallbackTitle
+        let body = parts.count > 1 ? String(parts[1]) : ""
+        return NoteContent(title: title, body: body)
+    }
+
+    private func currentNoteTemplate() -> String {
+        let v = UserDefaults.standard.string(forKey: AppConstants.noteTemplateKey)?
+            .trimmingCharacters(in: .newlines)
+        if let v, !v.isEmpty {
+            return v
+        }
+        return AppConstants.defaultNoteTemplate
     }
 
     private func showTransientAlert(_ message: String) {

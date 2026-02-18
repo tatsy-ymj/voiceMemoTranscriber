@@ -15,4 +15,18 @@ extension DateFormatter {
         f.timeStyle = .medium
         return f
     }()
+
+    static let noteTemplateDateFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.locale = Locale.current
+        f.dateFormat = "yyyy-MM-dd"
+        return f
+    }()
+
+    static let noteTemplateTimeFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.locale = Locale.current
+        f.dateFormat = "HH:mm"
+        return f
+    }()
 }

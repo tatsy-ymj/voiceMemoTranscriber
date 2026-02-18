@@ -19,6 +19,8 @@ Voice Memos由来の音声ファイル（m4a/wav/aiff/caf）を監視フォル�
 - Select Watch Folder…
 - Start Watching / Stop Watching
 - Request Speech Permission
+- Edit Note Format...
+- Reset Note Format to Default
 - Open Log
 - Recent Results（直近処理結果）
 - Quit
@@ -35,8 +37,9 @@ Voice Memos由来の音声ファイル（m4a/wav/aiff/caf）を監視フォル�
 - 文字起こし: `SFSpeechRecognizer` + `SFSpeechURLRecognitionRequest`（既定ロケール `ja-JP`）
 - Notes保存: `osascript` で AppleScript を実行し、Notes内フォルダ `VoiceMemoTranscriber` に毎回新規ノートを作成
 - 本文改行は Notes 向けに `\\n` を `\\r` へ正規化
+- ノート本文テンプレートはユーザー編集可能（デフォルト: `{date} {time}\\n{transcribed_text}\\n{original_audio}`）
 - ノートタイトルは `yyyy-MM-dd HH:mm`（日時のみ）
-- ノート本文は「文字起こし本文」+ 改行 + 「元ファイルのfile://リンク」
+- 利用可能プレースホルダ: `{date}`, `{time}`, `{transcribed_text}`, `{original_audio}`, `{filename}`
 - 重複防止/履歴: `path + size + mtime` のSHA256指紋を SQLite に保存
 - キュー: 逐次1件ずつ処理（同時実行なし）
 - ログ: Console + `~/Library/Logs/VoiceMemoTranscriber/app.log`（Sandbox実行時はコンテナ配下のLibrary/Logs）
