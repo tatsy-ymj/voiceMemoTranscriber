@@ -235,15 +235,26 @@ final class AppController: ObservableObject {
             let noteTitle = DateFormatter.noteTitleFormatter.string(from: importedAt)
             let noteBody = makeNoteBody(fileURL: stable.url, transcript: transcript)
 
-            try notesService.createNote(title: noteTitle, body: noteBody)
+            try await MainActor.run {
+                try notesService.createNote(title: noteTitle, body: noteBody)
+            }
             processedStore.markProcessed(fingerprint: fingerprint, status: .success)
             logger.log("Note created for: \(stable.url.lastPathComponent)")
         } catch {
+            let nsError = error as NSError
+            if nsError.domain == NSCocoaErrorDomain && nsError.code == NSFileNoSuchFileError {
+                logger.log("Skip moved/temporary file: \(path)")
+                return
+            }
             logger.error("Failed to process \(path): \(error.localizedDescription)")
             if let notesError = error as? NotesServiceError {
                 switch notesError {
                 case .automationDenied:
                     logger.error("Grant Automation permission: System Settings > Privacy & Security > Automation > VoiceMemoTranscriber > Notes")
+                case .notesNotRunning:
+                    logger.error("Notes app is not ready. Launch Notes once, then retry.")
+                case .launchFailed:
+                    logger.error("Failed to launch Notes. Ensure Notes.app exists and can be opened normally.")
                 case .defaultAccountUnavailable:
                     logger.error("Open Notes once and ensure a default account is configured.")
                 case .scriptError:
@@ -272,6 +283,7 @@ final class AppController: ObservableObject {
         for case let url as URL in enumerator {
             let ext = url.pathExtension.lowercased()
             guard AppConstants.supportedExtensions.contains(ext) else { continue }
+            if url.pathComponents.contains("Capture") { continue }
 
             let vals = try? url.resourceValues(forKeys: [.isRegularFileKey])
             if vals?.isRegularFile == true {
