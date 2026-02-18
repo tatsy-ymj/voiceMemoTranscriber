@@ -253,6 +253,8 @@ final class AppController: ObservableObject {
                     logger.error("Grant Automation permission: System Settings > Privacy & Security > Automation > VoiceMemoTranscriber > Notes")
                 case .notesNotRunning:
                     logger.error("Notes app is not ready. Launch Notes once, then retry.")
+                case .appleEventHandlerFailed:
+                    logger.error("Notes returned AppleEvent handler failed (-10000). Retrying is enabled; if it persists, restart Notes and retry.")
                 case .launchFailed:
                     logger.error("Failed to launch Notes. Ensure Notes.app exists and can be opened normally.")
                 case .defaultAccountUnavailable:

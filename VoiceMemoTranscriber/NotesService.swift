@@ -5,6 +5,7 @@ enum NotesServiceError: Error, LocalizedError {
     case automationDenied(String)
     case defaultAccountUnavailable(String)
     case notesNotRunning(String)
+    case appleEventHandlerFailed(String)
     case launchFailed(String)
     case scriptError(String)
 
@@ -16,6 +17,8 @@ enum NotesServiceError: Error, LocalizedError {
             return "Notes default account is unavailable: \(msg). Open Notes once and ensure an account exists."
         case .notesNotRunning(let msg):
             return "Notes is not ready: \(msg). Open Notes once and retry."
+        case .appleEventHandlerFailed(let msg):
+            return "Notes AppleEvent handler failed: \(msg). Retrying may resolve this."
         case .launchFailed(let msg):
             return "Failed to launch Notes: \(msg)"
         case .scriptError(let msg):
@@ -43,10 +46,14 @@ final class NotesService {
                 do {
                     try runCreateScript(title: title, noteBodyHTML: noteBodyHTML)
                 } catch let e as NotesServiceError {
-                    if case .notesNotRunning = e {
+                    switch e {
+                    case .notesNotRunning:
                         logger.error("NotesService: NSAppleScript path got -600, trying osascript fallback")
-                        try runCreateScriptViaOSAScript(title: title, noteBodyHTML: noteBodyHTML)
-                    } else {
+                        try runCreateScriptViaOSAScriptPlain(title: title, noteBodyText: normalizedBody)
+                    case .appleEventHandlerFailed:
+                        logger.error("NotesService: NSAppleScript path got -10000, trying osascript plain-text fallback")
+                        try runCreateScriptViaOSAScriptPlain(title: title, noteBodyText: normalizedBody)
+                    default:
                         throw e
                     }
                 }
@@ -59,6 +66,11 @@ final class NotesService {
                     logger.log("NotesService: attempt \(attempt) got -600, relaunching Notes and retrying")
                     try launchNotesIfNeeded()
                     Thread.sleep(forTimeInterval: min(2.5, 0.5 * Double(attempt)))
+                    continue
+                case .appleEventHandlerFailed:
+                    logger.log("NotesService: attempt \(attempt) got -10000, relaunching Notes and retrying")
+                    try launchNotesIfNeeded()
+                    Thread.sleep(forTimeInterval: min(2.5, 0.7 * Double(attempt)))
                     continue
                 default:
                     throw error
@@ -152,15 +164,15 @@ final class NotesService {
         try executeAppleScript(script)
     }
 
-    private func runCreateScriptViaOSAScript(title: String, noteBodyHTML: String) throws {
+    private func runCreateScriptViaOSAScriptPlain(title: String, noteBodyText: String) throws {
         let folderNameEsc = escapeForAppleScript(targetFolderName)
         let titleEsc = escapeForAppleScript(title)
-        let bodyEsc = escapeForAppleScript(noteBodyHTML)
+        let bodyEsc = escapeForAppleScript(noteBodyText)
 
         let script = """
         set folderName to "\(folderNameEsc)"
         set noteTitle to "\(titleEsc)"
-        set noteBodyHTML to "\(bodyEsc)"
+        set noteBodyText to "\(bodyEsc)"
         tell application id "com.apple.Notes"
             launch
             activate
@@ -177,7 +189,7 @@ final class NotesService {
                 if targetFolder is missing value then
                     set targetFolder to make new folder with properties {name:folderName}
                 end if
-                make new note at targetFolder with properties {name:noteTitle, body:noteBodyHTML}
+                make new note at targetFolder with properties {name:noteTitle, body:noteBodyText}
             end tell
         end tell
         """
@@ -222,6 +234,9 @@ final class NotesService {
         let lower = message.lowercased()
         if errorNumber == -1743 || lower.contains("(-1743)") || lower.contains("not authorized to send apple events") {
             return .automationDenied(message)
+        }
+        if errorNumber == -10000 || lower.contains("(-10000)") || lower.contains("appleevent handler failed") {
+            return .appleEventHandlerFailed(message)
         }
         if errorNumber == -600 || lower.contains("(-600)") || lower.contains("application isn’t running") || lower.contains("application is not running") {
             return .notesNotRunning(message)
