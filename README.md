@@ -1,5 +1,7 @@
 # VoiceMemoTranscriber (macOS 13+, SwiftUI Menu Bar App)
 
+[English README](README.en.md)
+
 Voice Memos由来の音声ファイル（m4a/wav/aiff/caf）を監視フォルダで検知し、Speech frameworkで文字起こししてNotesに毎回新規ノートを作成する最小実用アプリです。
 
 ## 1. プロジェクト作成手順（Xcode）
@@ -11,7 +13,10 @@ Voice Memos由来の音声ファイル（m4a/wav/aiff/caf）を監視フォル�
    - `VoiceMemoTranscriber/Support/Info.plist`
 5. ターゲットの `Signing & Capabilities` で Entitlements ファイルを
    - `VoiceMemoTranscriber/Support/VoiceMemoTranscriber.entitlements`
-   に設定（SandboxはON）
+   に設定（SandboxはON, Debug用）
+6. Releaseビルドは Entitlements を
+   - `VoiceMemoTranscriber/Support/VoiceMemoTranscriber.Release.entitlements`
+   に設定
 
 ## 2. UI / 機能
 
@@ -33,12 +38,15 @@ Voice Memos由来の音声ファイル（m4a/wav/aiff/caf）を監視フォル�
 
 - 監視: `DispatchSourceFileSystemObject` でディレクトリFDをイベント駆動監視
 - 検知後: フォルダ全走査で対象拡張子ファイルを抽出
+- 監視対象の代表例（環境依存）:
+  - `~/Library/Group Containers/group.com.apple.VoiceMemos.shared/Recordings`
 - 安定化待ち: 数秒間隔でサイズを複数回チェックし、書き込み完了後に処理
 - 文字起こし: `SFSpeechRecognizer` + `SFSpeechURLRecognitionRequest`（既定ロケール `ja-JP`）
-- Notes保存: `osascript` で AppleScript を実行し、Notes内フォルダ `VoiceMemoTranscriber` に毎回新規ノートを作成
+- Notes保存: `NSAppleScript`（必要時 `osascript` フォールバック）で、Notes内フォルダ `VoiceMemoTranscriber` に毎回新規ノートを作成
 - 本文改行は Notes 向けに `\\n` を `\\r` へ正規化
 - ノート本文テンプレートはユーザー編集可能（デフォルト: `{date} {time}\\n{transcribed_text}\\n{original_audio}`）
-- ノートタイトルは `yyyy-MM-dd HH:mm`（日時のみ）
+- ノートタイトルは「テンプレート展開後の1行目」
+- ノート本文は「テンプレート展開後の2行目以降」
 - 利用可能プレースホルダ: `{date}`, `{time}`, `{transcribed_text}`, `{original_audio}`, `{filename}`
 - 重複防止/履歴: `path + size + mtime` のSHA256指紋を SQLite に保存
 - キュー: 逐次1件ずつ処理（同時実行なし）
@@ -64,6 +72,7 @@ Voice Memos由来の音声ファイル（m4a/wav/aiff/caf）を監視フォル�
 
 1. アプリ起動
 2. `Select Watch Folder…` で監視先フォルダを選択
+   - 推奨: `~/Library/Group Containers/group.com.apple.VoiceMemos.shared/Recordings`
 3. `Start Watching`
 4. 監視フォルダへ `.m4a/.wav/.aiff/.caf` を追加
 5. 数秒後、Notesに新規ノート作成されることを確認
@@ -77,6 +86,7 @@ Voice Memos由来の音声ファイル（m4a/wav/aiff/caf）を監視フォル�
 
 ### Notes作成に失敗
 - System Settings > Privacy & Security > Automation でアプリのNotes制御を許可
+- `tccutil reset AppleEvents com.binword.VoiceMemoTranscriber` 実行後に再許可で改善する場合あり
 
 ### 監視フォルダが読めない
 - 監視フォルダをアプリ内の `Select Watch Folder…` から再選択（security-scoped bookmark更新）
