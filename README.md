@@ -20,6 +20,7 @@ Voice Memos由来の音声ファイル（m4a/wav/aiff/caf）を監視フォル�
 - Start Watching / Stop Watching
 - Request Speech Permission
 - Open Log
+- Recent Results（直近処理結果）
 - Quit
 
 状態表示:
@@ -36,7 +37,7 @@ Voice Memos由来の音声ファイル（m4a/wav/aiff/caf）を監視フォル�
 - 本文改行は Notes 向けに `\\n` を `\\r` へ正規化
 - ノートタイトルは `yyyy-MM-dd HH:mm`（日時のみ）
 - ノート本文は「文字起こし本文」+ 改行 + 「元ファイルのfile://リンク」
-- 重複防止: `path + size + mtime` のSHA256指紋をJSON保存
+- 重複防止/履歴: `path + size + mtime` のSHA256指紋を SQLite に保存
 - キュー: 逐次1件ずつ処理（同時実行なし）
 - ログ: Console + `~/Library/Logs/VoiceMemoTranscriber/app.log`（Sandbox実行時はコンテナ配下のLibrary/Logs）
 
@@ -80,4 +81,4 @@ Voice Memos由来の音声ファイル（m4a/wav/aiff/caf）を監視フォル�
 
 ### 同じファイルが再処理されない
 - 重複防止仕様です（fingerprintベース）
-- `~/Library/Application Support/VoiceMemoTranscriber/processed.json` を削除すると再処理可能
+- `~/Library/Application Support/VoiceMemoTranscriber/processed.sqlite3` を削除すると再処理可能

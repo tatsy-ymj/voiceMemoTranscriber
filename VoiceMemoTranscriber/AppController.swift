@@ -6,6 +6,7 @@ final class AppController: ObservableObject {
     @Published var watching = false
     @Published var showAlert = false
     @Published var alertMessage = ""
+    @Published private(set) var recentResults: [ProcessedStore.RecentRecord] = []
 
     private let logger = AppLogger.shared
     private let speechTranscriber = SpeechTranscriber(localeIdentifier: AppConstants.defaultLocale)
@@ -29,6 +30,7 @@ final class AppController: ObservableObject {
 
     init() {
         restoreWatchFolderBookmark()
+        refreshRecentResults()
         logger.log("App launched")
     }
 
@@ -238,7 +240,15 @@ final class AppController: ObservableObject {
             try await MainActor.run {
                 try notesService.createNote(title: noteTitle, body: noteBody)
             }
-            processedStore.markProcessed(fingerprint: fingerprint, status: .success)
+            processedStore.markProcessed(
+                fingerprint: fingerprint,
+                path: stable.url.path,
+                size: stable.size,
+                mtime: stable.mtime,
+                status: .success,
+                errorMessage: nil
+            )
+            refreshRecentResults()
             logger.log("Note created for: \(stable.url.lastPathComponent)")
         } catch {
             let nsError = error as NSError
@@ -265,7 +275,15 @@ final class AppController: ObservableObject {
             }
             if let info = try? currentFileInfo(url: fileURL) {
                 let fp = ProcessedStore.fingerprint(path: info.url.path, size: info.size, mtime: info.mtime)
-                processedStore.markProcessed(fingerprint: fp, status: .failed)
+                processedStore.markProcessed(
+                    fingerprint: fp,
+                    path: info.url.path,
+                    size: info.size,
+                    mtime: info.mtime,
+                    status: .failed,
+                    errorMessage: error.localizedDescription
+                )
+                refreshRecentResults()
             }
             await MainActor.run {
                 self.showTransientAlert("Processing failed: \(error.localizedDescription)")
@@ -350,6 +368,16 @@ final class AppController: ObservableObject {
     private func showTransientAlert(_ message: String) {
         alertMessage = message
         showAlert = true
+    }
+
+    private func refreshRecentResults() {
+        processingQueue.async { [weak self] in
+            guard let self else { return }
+            let rows = self.processedStore.recentResults(limit: AppConstants.recentResultsLimit)
+            DispatchQueue.main.async {
+                self.recentResults = rows
+            }
+        }
     }
 
     private func persistWatchFolderBookmark(_ url: URL) {

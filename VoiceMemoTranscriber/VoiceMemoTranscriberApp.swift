@@ -45,6 +45,17 @@ struct VoiceMemoTranscriberApp: App {
                     appController.openLogFile()
                 }
 
+                Menu("Recent Results") {
+                    if appController.recentResults.isEmpty {
+                        Text("No results yet")
+                    } else {
+                        ForEach(appController.recentResults) { row in
+                            Text(recentResultText(row))
+                                .lineLimit(1)
+                        }
+                    }
+                }
+
                 Divider()
 
                 Button("Quit") {
@@ -72,4 +83,21 @@ struct VoiceMemoTranscriberApp: App {
         let apps = NSRunningApplication.runningApplications(withBundleIdentifier: bundleID)
         return apps.contains { $0.processIdentifier != currentPID }
     }
+
+    private func recentResultText(_ row: ProcessedStore.RecentRecord) -> String {
+        let stamp = Self.recentDateFormatter.string(from: row.processedAt)
+        switch row.status {
+        case .success:
+            return "[OK] \(stamp) \(row.fileName)"
+        case .failed:
+            let reason = row.errorMessage?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "failed"
+            return "[NG] \(stamp) \(row.fileName) - \(reason)"
+        }
+    }
+
+    private static let recentDateFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "MM-dd HH:mm"
+        return f
+    }()
 }

@@ -12,5 +12,7 @@ enum AppConstants {
     static let watchFolderBookmarkKey = "WatchFolderBookmark"
     static let watchFolderPathFallbackKey = "WatchFolderPathFallback"
 
-    static let processedStoreFileName = "processed.json"
+    static let processedStoreDBFileName = "processed.sqlite3"
+    static let processedStoreLegacyJSONFileName = "processed.json"
+    static let recentResultsLimit = 8
 }
