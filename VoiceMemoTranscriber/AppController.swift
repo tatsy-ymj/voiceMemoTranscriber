@@ -95,6 +95,25 @@ final class AppController: ObservableObject {
         NSWorkspace.shared.open(AppLogger.shared.logFileURL)
     }
 
+    func clearRecentResults() {
+        DispatchQueue.main.async {
+            let alert = NSAlert()
+            alert.messageText = "Clear recent results?"
+            alert.informativeText = "This will remove all transcription history records."
+            alert.alertStyle = .warning
+            alert.addButton(withTitle: "Clear")
+            alert.addButton(withTitle: "Cancel")
+
+            NSApp.activate(ignoringOtherApps: true)
+            let response = alert.runModal()
+            guard response == .alertFirstButtonReturn else { return }
+
+            self.processedStore.clearAll()
+            self.refreshRecentResults()
+            self.logger.log("Cleared recent processing results.")
+        }
+    }
+
     private func startWatching() {
         guard let watchFolderURL else {
             showTransientAlert("Select watch folder first.")

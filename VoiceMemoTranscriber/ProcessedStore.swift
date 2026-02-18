@@ -148,6 +148,13 @@ final class ProcessedStore {
         }
     }
 
+    func clearAll() {
+        queue.sync {
+            guard let db else { return }
+            _ = sqlite3_exec(db, "DELETE FROM processed_records;", nil, nil, nil)
+        }
+    }
+
     static func fingerprint(path: String, size: UInt64, mtime: TimeInterval) -> String {
         let raw = "\(path)|\(size)|\(mtime)"
         let hash = SHA256.hash(data: Data(raw.utf8))

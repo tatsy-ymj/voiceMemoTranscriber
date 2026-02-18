@@ -53,8 +53,13 @@ struct VoiceMemoTranscriberApp: App {
                             Text(recentResultText(row))
                                 .lineLimit(1)
                         }
+                        Divider()
+                        Button("Clear Recent Results...") {
+                            appController.clearRecentResults()
+                        }
                     }
                 }
+                .disabled(appController.recentResults.isEmpty)
 
                 Divider()
 
@@ -70,7 +75,8 @@ struct VoiceMemoTranscriberApp: App {
                 Text(appController.alertMessage)
             }
         } label: {
-            Image(systemName: appController.watching ? "waveform.circle.fill" : "waveform.circle")
+            Image(systemName: appController.watching ? "record.circle.fill" : "record.circle")
+                .help(appController.watching ? "VoiceMemoTranscriber: Watching" : "VoiceMemoTranscriber: Idle")
         }
         .menuBarExtraStyle(.window)
     }
