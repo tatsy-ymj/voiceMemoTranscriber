@@ -106,3 +106,5 @@ Microphone permission:
 - This is expected due to fingerprint-based deduplication
 - Remove DB to reprocess:
   - `~/Library/Application Support/VoiceMemoTranscriber/processed.sqlite3`
+
+Release verification: Confirmed on February 18, 2026 (watch -> transcribe -> create note -> recent results -> clear results -> restart/bookmark restore).
