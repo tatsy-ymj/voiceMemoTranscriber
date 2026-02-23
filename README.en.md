@@ -134,3 +134,9 @@ Microphone permission:
   - `~/Library/Application Support/VoiceMemoTranscriber/processed.sqlite3`
 
 Release verification: Confirmed on February 18, 2026 (watch -> transcribe -> create note -> recent results -> clear results -> restart/bookmark restore).
+
+## 9. Maintenance Policy
+
+- This is a personal project. I cannot guarantee responses to Issues or Pull Requests.
+- Bug reports and feature requests via Issues are welcome.
+- Pull Requests are welcome, but they may not be reviewed or merged.

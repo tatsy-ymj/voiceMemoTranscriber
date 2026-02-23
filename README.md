@@ -121,3 +121,9 @@ Voice Memos由来の音声ファイル（m4a/wav/aiff/caf）を監視フォル�
 ### 同じファイルが再処理されない
 - 重複防止仕様です（fingerprintベース）
 - `~/Library/Application Support/VoiceMemoTranscriber/processed.sqlite3` を削除すると再処理可能
+
+## 9. メンテナンスポリシー
+
+- このリポジトリは個人開発プロジェクトです。Issue / Pull Request への返信・対応は保証できません。
+- バグ報告や要望は Issue で受け付けます。
+- Pull Request は歓迎しますが、レビューやマージを行わない場合があります。
