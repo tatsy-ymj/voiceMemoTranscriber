@@ -28,3 +28,10 @@ Package.resolved
 
 # App runtime local data
 VoiceMemoTranscriber.app
+
+# Distribution artifacts
+release/
+dist/
+*.dmg
+*.pkg
+*.xcarchive

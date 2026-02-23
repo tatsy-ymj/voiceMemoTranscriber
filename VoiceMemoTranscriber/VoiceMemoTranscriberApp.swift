@@ -75,6 +75,18 @@ struct VoiceMemoTranscriberApp: App {
 
                 Divider()
 
+                Text("VoiceMemo Transcriber")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                Text(versionDisplayText)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+
+                Text("binWord Inc.")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+
                 Button("Quit") {
                     NSApplication.shared.terminate(nil)
                 }
@@ -118,4 +130,11 @@ struct VoiceMemoTranscriberApp: App {
         f.dateFormat = "MM-dd HH:mm"
         return f
     }()
+
+    private var versionDisplayText: String {
+        let info = Bundle.main.infoDictionary
+        let version = info?["CFBundleShortVersionString"] as? String ?? "?"
+        let build = info?["CFBundleVersion"] as? String ?? "?"
+        return "Version \(version) (Build \(build))"
+    }
 }
