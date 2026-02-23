@@ -2,7 +2,7 @@
 
 [English README](README.en.md)
 
-Voice Memos由来の音声ファイル（m4a/wav/aiff/caf）を監視フォルダで検知し、Speech frameworkで文字起こししてNotesに毎回新規ノートを作成する最小実用アプリです。
+Voice Memos由来の音声ファイル（m4a/wav/aiff/caf）を監視フォルダで検知し、Speech frameworkで文字起こししてNotes（メモアプリ）に毎回新規ノートを作成する最小実用アプリです。iCloud同期を使っているのなら、iPhoneやApple Watchのボイスメモをスムーズに文字起こしできるため、アイデアメモなどに重宝します。
 
 ## 1. インストール（App Store版 / GitHub配布版）
 

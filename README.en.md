@@ -2,7 +2,7 @@
 
 [日本語README](README.md)
 
-VoiceMemoTranscriber watches a folder for Voice Memos audio files (`m4a/wav/aiff/caf`), transcribes them with Apple's Speech framework, and creates a new note in Apple Notes for each file.
+VoiceMemoTranscriber watches a folder for Voice Memos audio files (`m4a/wav/aiff/caf`), transcribes them with Apple's Speech framework, and creates a new note in Apple Notes for each file. If you use iCloud sync, it is especially useful for quickly transcribing Voice Memos recorded on iPhone or Apple Watch, such as idea notes.
 
 ## 1. Installation (App Store / GitHub DMG)
 
