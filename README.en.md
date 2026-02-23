@@ -4,7 +4,33 @@
 
 VoiceMemoTranscriber watches a folder for Voice Memos audio files (`m4a/wav/aiff/caf`), transcribes them with Apple's Speech framework, and creates a new note in Apple Notes for each file.
 
-## 1. Project Setup (Xcode)
+## 1. Installation (App Store / GitHub DMG)
+
+### App Store version
+1. Install `VoiceMemoTranscriber` from the App Store.
+2. Launch the app.
+3. Grant initial permissions (Speech Recognition / Automation).
+4. Select the watch folder via `Select Watch Folder…`.
+5. Click `Start Watching`.
+
+### GitHub release (DMG)
+1. Download the `.dmg` from GitHub Releases.
+2. Open the `.dmg` and copy `VoiceMemoTranscriber.app` to `Applications`.
+3. Launch the app (if Gatekeeper warns on first launch, right-click the app and choose `Open`).
+4. Grant initial permissions (Speech Recognition / Automation).
+5. Select the watch folder and click `Start Watching`.
+
+## 2. Quick Start (First-time Setup)
+
+1. Launch the app.
+2. Select the watch folder in `Select Watch Folder…`.
+   - Recommended: `~/Library/Group Containers/group.com.apple.VoiceMemos.shared/Recordings`
+3. Start watching.
+4. Record in Voice Memos (or add an audio file: `.m4a/.wav/.aiff/.caf`).
+5. Confirm a new note is created after a few seconds.
+6. Check logs via `Open Log`.
+
+## 3. Project Setup (Xcode)
 
 1. Create a macOS `App` project (SwiftUI) in Xcode.
 2. Set Product Name to `VoiceMemoTranscriber`.
@@ -16,7 +42,7 @@ VoiceMemoTranscriber watches a folder for Voice Memos audio files (`m4a/wav/aiff
 6. For Release builds, use:
    - `VoiceMemoTranscriber/Support/VoiceMemoTranscriber.Release.entitlements`
 
-## 2. UI / Features
+## 4. UI / Features
 
 Menu bar items:
 - Select Watch Folder…
@@ -32,7 +58,7 @@ Status display:
 - Status: Watching / Idle
 - Current watch folder path
 
-## 3. Implementation Highlights
+## 5. Implementation Highlights
 
 - Watcher: event-driven directory monitoring via `DispatchSourceFileSystemObject`
 - Detection: folder scan for supported audio extensions
@@ -59,7 +85,7 @@ Status display:
 Typical watch folder on many systems (environment-dependent):
 - `~/Library/Group Containers/group.com.apple.VoiceMemos.shared/Recordings`
 
-## 4. Permissions
+## 6. Permissions
 
 Grant on first use:
 - Speech Recognition
@@ -77,7 +103,7 @@ Microphone permission:
 - Usually not required (file-based transcription)
 - Some environments may still request it
 
-## 5. Quick Test
+## 7. Quick Test
 
 1. Launch app
 2. Select watch folder in `Select Watch Folder…`
@@ -87,7 +113,7 @@ Microphone permission:
 5. Confirm a new note is created
 6. Check logs via `Open Log`
 
-## 6. Troubleshooting
+## 8. Troubleshooting
 
 ### Speech permission denied
 - Allow in: System Settings > Privacy & Security > Speech Recognition

@@ -4,7 +4,33 @@
 
 Voice Memos由来の音声ファイル（m4a/wav/aiff/caf）を監視フォルダで検知し、Speech frameworkで文字起こししてNotesに毎回新規ノートを作成する最小実用アプリです。
 
-## 1. プロジェクト作成手順（Xcode）
+## 1. インストール（App Store版 / GitHub配布版）
+
+### App Store版
+1. App Storeから `VoiceMemoTranscriber` をインストール
+2. アプリを起動
+3. 初回権限（Speech Recognition / Automation）を許可
+4. `Select Watch Folder…` で監視フォルダを選択
+5. `Start Watching` を実行
+
+### GitHub配布版（DMG）
+1. GitHub Releases から `.dmg` をダウンロード
+2. `.dmg` を開き、`VoiceMemoTranscriber.app` を `Applications` にコピー
+3. アプリを起動（初回にGatekeeper警告が出た場合は右クリック → `開く`）
+4. 初回権限（Speech Recognition / Automation）を許可
+5. `Select Watch Folder…` で監視フォルダを選択し、`Start Watching`
+
+## 2. クイックスタート（初回設定）
+
+1. アプリ起動
+2. `Select Watch Folder…` で監視先フォルダを選択
+   - 推奨: `~/Library/Group Containers/group.com.apple.VoiceMemos.shared/Recordings`
+3. `Start Watching`
+4. ボイスメモで録音する（または `.m4a/.wav/.aiff/.caf` を追加）
+5. 数秒後、Notes に新規ノート作成されることを確認
+6. `Open Log` でログ確認
+
+## 3. プロジェクト作成手順（Xcode）
 
 1. Xcodeで `App` (SwiftUI, macOS) を作成
 2. Product Name を `VoiceMemoTranscriber` に設定
@@ -18,7 +44,7 @@ Voice Memos由来の音声ファイル（m4a/wav/aiff/caf）を監視フォル�
    - `VoiceMemoTranscriber/Support/VoiceMemoTranscriber.Release.entitlements`
    に設定
 
-## 2. UI / 機能
+## 4. UI / 機能
 
 メニューバー項目:
 - Select Watch Folder…
@@ -34,7 +60,7 @@ Voice Memos由来の音声ファイル（m4a/wav/aiff/caf）を監視フォル�
 - Status: Watching / Idle
 - 現在の監視フォルダ
 
-## 3. 実装ポイント
+## 5. 実装ポイント
 
 - 監視: `DispatchSourceFileSystemObject` でディレクトリFDをイベント駆動監視
 - 検知後: フォルダ全走査で対象拡張子ファイルを抽出
@@ -52,7 +78,7 @@ Voice Memos由来の音声ファイル（m4a/wav/aiff/caf）を監視フォル�
 - キュー: 逐次1件ずつ処理（同時実行なし）
 - ログ: Console + `~/Library/Logs/VoiceMemoTranscriber/app.log`（Sandbox実行時はコンテナ配下のLibrary/Logs）
 
-## 4. 権限
+## 6. 権限
 
 初回利用時に以下を許可:
 - Speech Recognition
@@ -68,7 +94,7 @@ Voice Memos由来の音声ファイル（m4a/wav/aiff/caf）を監視フォル�
 このアプリはファイル文字起こし中心のためマイク権限は通常不要です。
 ただし環境差で要求される場合があるため、その場合は許可してください。
 
-## 5. 動作確認
+## 7. 動作確認
 
 1. アプリ起動
 2. `Select Watch Folder…` で監視先フォルダを選択
@@ -78,7 +104,7 @@ Voice Memos由来の音声ファイル（m4a/wav/aiff/caf）を監視フォル�
 5. 数秒後、Notesに新規ノート作成されることを確認
 6. `Open Log` でログ確認
 
-## 6. トラブルシュート
+## 8. トラブルシュート
 
 ### `Speech recognition permission denied`
 - System Settings > Privacy & Security > Speech Recognition で許可
