@@ -24,6 +24,7 @@ Voice Memos由来の音声ファイル（m4a/wav/aiff/caf）を監視フォル�
 
 1. アプリ起動
 2. `Select Watch Folder…` で監視先フォルダを選択
+   - フォルダ未設定時は、Voice Memosの典型保存先（存在する場合）を初期表示します
    - 推奨: `~/Library/Group Containers/group.com.apple.VoiceMemos.shared/Recordings`
 3. `Start Watching`
 4. ボイスメモで録音する（または `.m4a/.wav/.aiff/.caf` を追加）
@@ -59,6 +60,7 @@ Voice Memos由来の音声ファイル（m4a/wav/aiff/caf）を監視フォル�
 状態表示:
 - Status: Watching / Idle
 - 現在の監視フォルダ
+- `Select Watch Folder…` の下に、Voice Memosの典型保存先ヒントを表示（小さめ・補助色）
 
 ## 5. 実装ポイント
 

@@ -24,6 +24,7 @@ VoiceMemoTranscriber watches a folder for Voice Memos audio files (`m4a/wav/aiff
 
 1. Launch the app.
 2. Select the watch folder in `Select Watch Folder…`.
+   - If no watch folder is set yet, the app opens the typical Voice Memos recordings folder first (if it exists).
    - Recommended: `~/Library/Group Containers/group.com.apple.VoiceMemos.shared/Recordings`
 3. Start watching.
 4. Record in Voice Memos (or add an audio file: `.m4a/.wav/.aiff/.caf`).
@@ -57,6 +58,7 @@ Menu bar items:
 Status display:
 - Status: Watching / Idle
 - Current watch folder path
+- A small secondary hint under `Select Watch Folder…` shows the typical Voice Memos recordings folder path
 
 ## 5. Implementation Highlights
 
