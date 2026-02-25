@@ -32,6 +32,13 @@ struct VoiceMemoTranscriberApp: App {
                     appController.selectWatchFolder()
                 }
 
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Voice Memos recordings are typically stored in:")
+                    Text("~/Library/Group Containers/group.com.apple.VoiceMemos.shared/Recordings")
+                }
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+
                 Button(appController.watching ? "Stop Watching" : "Start Watching") {
                     appController.toggleWatching()
                 }

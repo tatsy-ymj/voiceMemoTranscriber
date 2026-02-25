@@ -49,7 +49,7 @@ final class AppController: ObservableObject {
             panel.canChooseFiles = false
             panel.allowsMultipleSelection = false
             panel.prompt = "Select"
-            panel.directoryURL = self.watchFolderURL
+            panel.directoryURL = self.watchFolderURL ?? self.defaultVoiceMemosRecordingsFolderIfExists()
 
             self.openPanel = panel
             panel.begin { [weak self] response in
@@ -64,6 +64,16 @@ final class AppController: ObservableObject {
                 }
             }
         }
+    }
+
+    private func defaultVoiceMemosRecordingsFolderIfExists() -> URL? {
+        let path = ("~/Library/Group Containers/group.com.apple.VoiceMemos.shared/Recordings" as NSString)
+            .expandingTildeInPath
+        var isDirectory: ObjCBool = false
+        guard FileManager.default.fileExists(atPath: path, isDirectory: &isDirectory), isDirectory.boolValue else {
+            return nil
+        }
+        return URL(fileURLWithPath: path, isDirectory: true)
     }
 
     func toggleWatching() {
